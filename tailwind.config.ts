@@ -58,6 +58,8 @@ export default {
 				'editor-panel': 'hsl(var(--editor-panel))',
 				'preview-panel': 'hsl(var(--preview-panel))',
 				'toolbar-bg': 'hsl(var(--toolbar-bg))',
+				'help-panel': 'hsl(var(--help-panel))',
+				'help-border': 'hsl(var(--help-border))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

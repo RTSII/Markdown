@@ -1,5 +1,6 @@
 import React from 'react';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
+import { ThemeProvider } from '@/hooks/useTheme';
 
 const Index = () => {
   const handleSave = (content: string) => {
@@ -54,12 +55,14 @@ function hello() {
 Start creating your amazing content! 🚀`;
 
   return (
-    <div className="min-h-screen bg-background">
-      <MarkdownEditor 
-        initialValue={initialContent}
-        onSave={handleSave}
-      />
-    </div>
+    <ThemeProvider defaultTheme="system" storageKey="markdown-editor-theme">
+      <div className="min-h-screen bg-background">
+        <MarkdownEditor 
+          initialValue={initialContent}
+          onSave={handleSave}
+        />
+      </div>
+    </ThemeProvider>
   );
 };
 

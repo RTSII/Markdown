@@ -1,27 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { 
-  Bold, 
-  Italic, 
-  List, 
-  ListOrdered, 
-  Quote, 
-  Code, 
-  Link, 
-  Image, 
-  Eye, 
-  EyeOff,
-  Download,
-  Save,
-  RotateCcw,
-  RotateCw,
-  Maximize2,
-  Minimize2
-} from 'lucide-react';
 import { MarkdownPreview } from './MarkdownPreview';
 import { EditorToolbar } from './EditorToolbar';
+import { HelpPanel } from './HelpPanel';
+import { SupermemoryIntegration } from './SupermemoryIntegration';
 import { useToast } from '@/hooks/use-toast';
 
 interface MarkdownEditorProps {
@@ -36,6 +19,7 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   const [content, setContent] = useState(initialValue);
   const [isPreviewVisible, setIsPreviewVisible] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isHelpVisible, setIsHelpVisible] = useState(false);
   const [history, setHistory] = useState<string[]>([initialValue]);
   const [historyIndex, setHistoryIndex] = useState(0);
   const { toast } = useToast();
@@ -136,6 +120,7 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 
   const togglePreview = () => setIsPreviewVisible(!isPreviewVisible);
   const toggleFullscreen = () => setIsFullscreen(!isFullscreen);
+  const toggleHelp = () => setIsHelpVisible(!isHelpVisible);
 
   const getLayoutClasses = () => {
     if (isFullscreen) {
@@ -175,6 +160,7 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
           onRedo={handleRedo}
           onTogglePreview={togglePreview}
           onToggleFullscreen={toggleFullscreen}
+          onToggleHelp={toggleHelp}
           isPreviewVisible={isPreviewVisible}
           isFullscreen={isFullscreen}
           canUndo={historyIndex > 0}
@@ -183,30 +169,51 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 
         <Separator />
 
-        {/* Editor and Preview */}
+        {/* Main Content Area */}
         <div className="flex h-full">
           {/* Editor Panel */}
           <div className={`${getEditorClasses()} flex flex-col`}>
-            <div className="bg-editor-panel px-4 py-2 border-b">
+            <div className="bg-editor-panel px-4 py-2 border-b flex items-center justify-between">
               <span className="text-sm text-muted-foreground font-medium">Markdown Editor</span>
+              <div className="text-xs text-muted-foreground">
+                {content.length} characters • {content.split('\n').length} lines
+              </div>
             </div>
             <div className="flex-1 relative">
               <textarea
                 value={content}
                 onChange={(e) => handleContentChange(e.target.value)}
-                className="w-full h-full p-4 border-0 resize-none font-mono text-sm bg-editor-panel focus:outline-none focus:ring-0"
-                placeholder="# Start writing your markdown here...
+                className="w-full h-full p-4 border-0 resize-none font-mono text-sm bg-editor-panel focus:outline-none focus:ring-0 transition-colors"
+                placeholder="# Welcome to Markdown Editor! 👋
 
-Write your content using **markdown** syntax. The preview will update in real-time.
+Click the **?** button in the toolbar to see the markdown guide.
 
-## Features
-- **Bold** and *italic* text
-- Lists and tables
-- Code blocks and syntax highlighting
-- Links and images
-- And much more..."
+## Quick Start
+- Use **bold** and *italic* text
+- Create [links](https://example.com) and add images
+- Make lists and tables
+- Add code blocks with syntax highlighting
+
+💡 **Pro tip**: All your work is auto-saved as you type!
+
+🧠 **Supermemory Integration**: Save and search your memories using the AI panel on the right."
                 spellCheck={false}
                 style={{ minHeight: 'calc(100vh - 180px)' }}
+                onKeyDown={(e) => {
+                  // Add keyboard shortcuts
+                  if (e.ctrlKey || e.metaKey) {
+                    if (e.key === 'b') {
+                      e.preventDefault();
+                      insertMarkdown('**', '**', 'bold text');
+                    } else if (e.key === 'i') {
+                      e.preventDefault();
+                      insertMarkdown('*', '*', 'italic text');
+                    } else if (e.key === 's') {
+                      e.preventDefault();
+                      handleSave();
+                    }
+                  }
+                }}
               />
             </div>
           </div>
@@ -218,14 +225,33 @@ Write your content using **markdown** syntax. The preview will update in real-ti
 
           {/* Preview Panel */}
           <div className={`${getPreviewClasses()} flex flex-col`}>
-            <div className="bg-preview-panel px-4 py-2 border-b">
+            <div className="bg-preview-panel px-4 py-2 border-b flex items-center justify-between">
               <span className="text-sm text-muted-foreground font-medium">Live Preview</span>
+              <div className="text-xs text-muted-foreground">
+                {Math.ceil(content.split(' ').length / 200)} min read
+              </div>
             </div>
             <div className="flex-1 overflow-auto">
               <MarkdownPreview content={content} />
             </div>
           </div>
+
+          {/* Help Panel */}
+          <HelpPanel 
+            isOpen={isHelpVisible} 
+            onClose={() => setIsHelpVisible(false)} 
+          />
         </div>
+
+        {/* Supermemory Sidebar */}
+        {!isFullscreen && (
+          <div className="fixed right-4 top-20 w-72 bg-card border rounded-lg shadow-lg p-4 z-40">
+            <SupermemoryIntegration 
+              content={content}
+              onContentUpdate={setContent}
+            />
+          </div>
+        )}
       </Card>
     </div>
   );

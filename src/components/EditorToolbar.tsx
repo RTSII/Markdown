@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { ThemeToggle } from './ThemeToggle';
 import { 
   Bold, 
   Italic, 
@@ -19,7 +20,8 @@ import {
   RotateCcw,
   RotateCw,
   Maximize2,
-  Minimize2
+  Minimize2,
+  HelpCircle
 } from 'lucide-react';
 
 interface EditorToolbarProps {
@@ -39,6 +41,7 @@ interface EditorToolbarProps {
   onRedo: () => void;
   onTogglePreview: () => void;
   onToggleFullscreen: () => void;
+  onToggleHelp: () => void;
   isPreviewVisible: boolean;
   isFullscreen: boolean;
   canUndo: boolean;
@@ -62,6 +65,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   onRedo,
   onTogglePreview,
   onToggleFullscreen,
+  onToggleHelp,
   isPreviewVisible,
   isFullscreen,
   canUndo,
@@ -203,6 +207,14 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
         <Button
           variant="toolbar"
           size="sm"
+          onClick={onToggleHelp}
+          title="Toggle Help Panel"
+        >
+          <HelpCircle className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="toolbar"
+          size="sm"
           onClick={onTogglePreview}
           title={isPreviewVisible ? "Hide Preview" : "Show Preview"}
         >
@@ -216,6 +228,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
         >
           {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
         </Button>
+        <ThemeToggle />
       </div>
 
       <Separator orientation="vertical" className="h-6 mx-1" />
