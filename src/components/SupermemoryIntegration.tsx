@@ -30,7 +30,10 @@ export const SupermemoryIntegration: React.FC<SupermemoryIntegrationProps> = ({
 }) => {
   const [config, setConfig] = useState<SupermemoryConfig>(() => {
     const saved = localStorage.getItem('supermemory-config');
-    return saved ? JSON.parse(saved) : { apiKey: '', domain: '' };
+    return saved ? JSON.parse(saved) : { 
+      apiKey: 'sm_mTx77GLefaYFCKTRmJcKRh_ImhBzNWxHtscwPvxPWMYzNMNcdUEFmCELLSampLogkJRAfFTzpuOAdeExcKsrcab', 
+      domain: 'console.supermemory.ai' 
+    };
   });
   
   const [isLoading, setIsLoading] = useState(false);
@@ -68,17 +71,37 @@ export const SupermemoryIntegration: React.FC<SupermemoryIntegrationProps> = ({
 
     setIsLoading(true);
     try {
-      // Simulated API call - replace with actual Supermemory API
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const response = await fetch('https://api.supermemory.ai/v3/documents', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${config.apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          content: content,
+          metadata: {
+            source: 'markdown-editor',
+            title: 'Markdown Document',
+            timestamp: new Date().toISOString()
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
       
       toast({
         title: "✅ Uploaded Successfully",
-        description: "Your markdown content has been saved to Supermemory!",
+        description: `Your markdown content has been saved to Supermemory! Document ID: ${result.id}`,
       });
     } catch (error) {
+      console.error('Upload error:', error);
       toast({
         title: "Upload Failed",
-        description: "Failed to upload to Supermemory. Please check your configuration.",
+        description: error instanceof Error ? error.message : "Failed to upload to Supermemory. Please check your configuration.",
         variant: "destructive"
       });
     } finally {
@@ -98,29 +121,55 @@ export const SupermemoryIntegration: React.FC<SupermemoryIntegrationProps> = ({
 
     setIsLoading(true);
     try {
-      // Simulated search - replace with actual Supermemory API
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const searchUrl = `https://api.supermemory.ai/v3/search?q=${encodeURIComponent(searchQuery)}&limit=5`;
+      const response = await fetch(searchUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${config.apiKey}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
       
-      const mockResults = `## Search Results for "${searchQuery}"
+      let searchResults = `## Search Results for "${searchQuery}"
 
-### Found in Supermemory:
-- **Memory 1**: Related content about ${searchQuery}
-- **Memory 2**: Previous notes on ${searchQuery}
-- **Memory 3**: Connected ideas and references
+### Found ${result.results?.length || 0} memories in Supermemory:
 
-*Click to insert specific memories into your document.*`;
+`;
 
-      onContentUpdate(content + '\n\n' + mockResults);
+      if (result.results && result.results.length > 0) {
+        result.results.forEach((doc: any, index: number) => {
+          searchResults += `#### ${index + 1}. ${doc.title || 'Untitled Memory'}
+**Score**: ${(doc.score * 100).toFixed(1)}%
+
+${doc.chunks?.[0]?.content || 'No content available'}
+
+---
+
+`;
+        });
+      } else {
+        searchResults += `No memories found for "${searchQuery}". Try different keywords or check your spelling.
+
+`;
+      }
+
+      onContentUpdate(content + '\n\n' + searchResults);
       setSearchQuery('');
       
       toast({
         title: "🔍 Search Complete",
-        description: "Found memories have been added to your document!",
+        description: `Found ${result.results?.length || 0} memories and added them to your document!`,
       });
     } catch (error) {
+      console.error('Search error:', error);
       toast({
         title: "Search Failed",
-        description: "Failed to search Supermemory. Please check your configuration.",
+        description: error instanceof Error ? error.message : "Failed to search Supermemory. Please check your configuration.",
         variant: "destructive"
       });
     } finally {
@@ -141,19 +190,28 @@ export const SupermemoryIntegration: React.FC<SupermemoryIntegrationProps> = ({
             <label className="text-sm font-medium mb-1 block">API Key</label>
             <Input
               type="password"
-              placeholder="Enter your Supermemory API key"
+              placeholder="Enter your Supermemory API key (starts with sm_)"
               value={config.apiKey}
               onChange={(e) => setConfig(prev => ({ ...prev, apiKey: e.target.value }))}
             />
+            <p className="text-xs text-muted-foreground mt-1">
+              Get your API key from {" "}
+              <a href="https://console.supermemory.ai" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                console.supermemory.ai
+              </a>
+            </p>
           </div>
           
           <div>
             <label className="text-sm font-medium mb-1 block">Domain</label>
             <Input
-              placeholder="your-domain.supermemory.ai"
+              placeholder="console.supermemory.ai"
               value={config.domain}
               onChange={(e) => setConfig(prev => ({ ...prev, domain: e.target.value }))}
             />
+            <p className="text-xs text-muted-foreground mt-1">
+              Usually "console.supermemory.ai" for cloud users
+            </p>
           </div>
           
           <div className="flex gap-2">
