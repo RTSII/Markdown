@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ThemeToggle } from './ThemeToggle';
+import { DraggableSupermemoryCard } from './DraggableSupermemoryCard';
 import { 
   Bold, 
   Italic, 
@@ -46,6 +47,8 @@ interface EditorToolbarProps {
   isFullscreen: boolean;
   canUndo: boolean;
   canRedo: boolean;
+  content: string;
+  onContentUpdate: (content: string) => void;
 }
 
 export const EditorToolbar: React.FC<EditorToolbarProps> = ({
@@ -69,7 +72,9 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   isPreviewVisible,
   isFullscreen,
   canUndo,
-  canRedo
+  canRedo,
+  content,
+  onContentUpdate
 }) => {
   return (
     <div className="bg-toolbar-bg border-b px-4 py-2 flex items-center gap-1 flex-wrap">
@@ -230,6 +235,14 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
         </Button>
         <ThemeToggle />
       </div>
+
+      <Separator orientation="vertical" className="h-6 mx-1" />
+
+      {/* Supermemory Integration */}
+      <DraggableSupermemoryCard 
+        content={content}
+        onContentUpdate={onContentUpdate}
+      />
 
       <Separator orientation="vertical" className="h-6 mx-1" />
 

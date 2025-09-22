@@ -165,6 +165,8 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
           isFullscreen={isFullscreen}
           canUndo={historyIndex > 0}
           canRedo={historyIndex < history.length - 1}
+          content={content}
+          onContentUpdate={setContent}
         />
 
         <Separator />
@@ -242,16 +244,6 @@ Click the **?** button in the toolbar to see the markdown guide.
             onClose={() => setIsHelpVisible(false)} 
           />
         </div>
-
-        {/* Supermemory Sidebar */}
-        {!isFullscreen && (
-          <div className="fixed right-4 top-20 w-72 bg-card border rounded-lg shadow-lg p-4 z-40">
-            <SupermemoryIntegration 
-              content={content}
-              onContentUpdate={setContent}
-            />
-          </div>
-        )}
       </Card>
     </div>
   );
