@@ -176,6 +176,50 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({ isOpen, onClose }) => {
             </Card>
           );
         })}
+
+        <Card className="border border-help-border p-3">
+          <div className="text-sm font-medium mb-2">📝 Professional Markdown Editor</div>
+          <div className="text-xs text-muted-foreground space-y-2">
+            <p>Welcome to your **professional markdown editor** with live preview! This editor includes:</p>
+            
+            <div className="mt-3">
+              <div className="font-medium text-xs mb-1">✨ Core Functionality</div>
+              <div className="ml-2 space-y-1">
+                <div>• **Real-time preview** with synchronized rendering</div>
+                <div>• **Syntax highlighting** for better readability</div>
+                <div>• **Auto-save** functionality with local storage backup</div>
+                <div>• **Undo/Redo** operations with full history</div>
+              </div>
+            </div>
+
+            <div className="mt-3">
+              <div className="font-medium text-xs mb-1">🎨 Professional Interface</div>
+              <div className="ml-2 space-y-1">
+                <div>• Clean, modern design optimized for writing</div>
+                <div>• Resizable split-pane layout</div>
+                <div>• Full-screen mode for focused writing</div>
+                <div>• Professional toolbar with quick actions</div>
+              </div>
+            </div>
+
+            <div className="mt-3">
+              <div className="font-medium text-xs mb-1">📝 Markdown Support</div>
+              <div className="ml-2 space-y-1">
+                <div>• Complete **GitHub Flavored Markdown** support</div>
+                <div>• Tables, task lists, and strikethrough text</div>
+                <div>• Code blocks with syntax highlighting</div>
+                <div>• Math equations and diagrams (coming soon)</div>
+              </div>
+            </div>
+
+            <div className="mt-3">
+              <div className="font-medium text-xs mb-1">🚀 Getting Started</div>
+              <div className="ml-2 space-y-1">
+                <div>Try editing content to see the live preview in action! Use the toolbar buttons or type markdown directly.</div>
+              </div>
+            </div>
+          </div>
+        </Card>
         
         <Card className="border border-help-border p-3">
           <div className="text-sm font-medium mb-2">💡 Pro Tips</div>
