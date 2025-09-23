@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "markdown-editor": {
+      "command": "node",
+      "args": ["mcp-server.cjs"],
+      "cwd": "c:\\Users\\rtsii\\Desktop\\Markdown",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
+}
